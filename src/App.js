@@ -1,25 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import { Input } from "antd";
+
+import UsersTable from "./components/UsersTable/UsersTable";
+import AddUser from "./components/AddUser/AddUser";
+
+import "./App.css";
+
+const { Search } = Input;
 
 function App() {
+  const [users, setUsers] = useState([])
+  const [searchValue, setSearchValue] = useState("")
+
+  useEffect(() => {
+    const localUsers = JSON.parse(localStorage.getItem("users"))
+
+    if (localUsers) {
+      setUsers(localUsers);
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem("users", JSON.stringify(users))
+  }, [users])
+
+  const handleSearchChange = (e) => setSearchValue(e.target.value)
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Search
+        placeholder="User search"
+        value={searchValue}
+        onChange={handleSearchChange}
+      />
+      <UsersTable
+        users={users}
+        setUsers={setUsers}
+        searchValue={searchValue}
+      />
+
+      <AddUser setUsers={setUsers} />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
